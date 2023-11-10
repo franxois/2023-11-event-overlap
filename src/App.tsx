@@ -66,6 +66,7 @@ export const App: FC = () => {
           width: number | undefined;
         };
       })
+      .sort((a, b) => (a.overlap.length < b.overlap.length ? -1 : 1))
       .map((event) => [event.id, event])
   );
 
@@ -84,6 +85,8 @@ export const App: FC = () => {
       console.log("ignore", id);
       continue;
     }
+
+    // TODO : if there is already a width set, use it instead of 100%/count
 
     const widthPercent = 100 / (myOverlapLen + 1);
 
