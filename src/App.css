@@ -1,0 +1,21 @@
+div#app {
+  height: 100%;
+}
+
+main {
+  background-color: bisque;
+  height: 100%;
+}
+
+div.event {
+  width: 100%;
+  border: 1px solid black;
+  background-color: rgba(100, 148, 237, 0.192);
+  position: absolute;
+}
+
+div.text-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
