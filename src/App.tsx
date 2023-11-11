@@ -1,7 +1,8 @@
 import { FC } from "react";
 
 import "./App.css";
-import input, { StartTime } from "./input";
+import input from "./input";
+import type { Event, StartTime } from "./types";
 
 const timeToMinutes = (time: StartTime) => {
   const [h, m] = time.split(":");
@@ -27,49 +28,36 @@ const getPercentFullHeight = (minutes: number) => {
 export const App: FC = () => {
   const events = Object.fromEntries(
     input
-      .map(
-        ({
+      .map(({ id, start, duration }): Event => {
+        const overlap = input
+          .filter(({ id: oId, start: oStart, duration: oDuration }) => {
+            if (id === oId) return false;
+
+            const timeStart = timeToMinutes(start);
+            const oTimeStart = timeToMinutes(oStart);
+            const oEndTime = oTimeStart + oDuration;
+
+            if (oEndTime <= timeStart) {
+              // Other event finish before
+              return false;
+            }
+
+            if (oTimeStart >= timeStart + duration) {
+              // Other event start after
+              return false;
+            }
+
+            return true;
+          })
+          .map((event) => event.id);
+
+        return {
           id,
           start,
           duration,
-        }): {
-          id: number;
-          start: StartTime;
-          duration: number;
-          overlap: number[];
-          hOffset?: number;
-          width?: number;
-        } => {
-          const overlap = input
-            .filter(({ id: oId, start: oStart, duration: oDuration }) => {
-              if (id === oId) return false;
-
-              const timeStart = timeToMinutes(start);
-              const oTimeStart = timeToMinutes(oStart);
-              const oEndTime = oTimeStart + oDuration;
-
-              if (oEndTime <= timeStart) {
-                // Other event finish before
-                return false;
-              }
-
-              if (oTimeStart >= timeStart + duration) {
-                // Other event start after
-                return false;
-              }
-
-              return true;
-            })
-            .map((event) => event.id);
-
-          return {
-            id,
-            start,
-            duration,
-            overlap,
-          };
-        }
-      )
+          overlap,
+        };
+      })
       .map((event) => [event.id, event])
   );
 
@@ -78,8 +66,6 @@ export const App: FC = () => {
   );
   for (const id of idsSortedByOverlap) {
     const event = events[id];
-
-    console.log("process", id, event);
 
     if (event.overlap.length === 0) continue;
 
@@ -90,7 +76,6 @@ export const App: FC = () => {
       Math.max(...event.overlap.map((id) => events[id].overlap.length))
     ) {
       // This event overlap many event, but not all at the same time
-      console.log("ignore", id);
       continue;
     }
 
@@ -125,15 +110,7 @@ export const App: FC = () => {
         }
       }
     }
-
-    console.log(
-      id,
-      "result",
-      ids.map((i) => events[i])
-    );
   }
-
-  console.log(events);
 
   return (
     <main>

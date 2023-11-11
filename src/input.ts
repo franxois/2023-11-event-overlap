@@ -1,6 +1,6 @@
-export type StartTime = `${number}:${number}`;
+import { BaseEvent } from "./types";
 
-const input: { id: number; start: StartTime; duration: number }[] = [
+const input: BaseEvent[] = [
   {
     id: 1,
     start: "17:00",
