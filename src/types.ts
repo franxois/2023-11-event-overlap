@@ -1,9 +1,12 @@
-export type StartTime = `${number}:${number}`;
+export type TimeString = `${number}:${number}`;
 
-export type BaseEvent = { id: number; start: StartTime; duration: number };
+export type BaseEvent = { id: number; start: TimeString; duration: number };
 
 export type Event = BaseEvent & {
+  // Other event ids that overlap
   overlap: number[];
-  hOffset?: number;
+  // Horizontal position
+  offset?: number;
+  // Event width, in percent
   width?: number;
 };
